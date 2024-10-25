@@ -3,7 +3,7 @@ import cv2
 import os
 import numpy as np
 cnn = tf.keras.models.load_model('mnist_cnn_model.keras')
-cla = np.sort(os.listdir('data/extracted_images'))
+cla = ['!', '(',')', '+' ,',' ,'-', '0' ,'1' ,'2' ,'3' ,'4', '5' ,'6' ,'7' ,'8' ,'9', '=' ,'C','S', 'T', '[' ,']' ,'cos' ,'div', 'geq' ,'gt', 'leq' ,'log', 'neq' ,'o', 'phi' ,'pi','q', 'sin' ,'sqrt', 'sum' ,'tan' ,'times', '{', '}']
 img = cv2.imread('data/Untitled.jpg')
 formula = {}
 gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
