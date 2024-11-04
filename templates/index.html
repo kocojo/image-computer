@@ -1,12 +1,73 @@
 {% extends "base.html" %}
 {% block content %}
 
-  <div class="main-container">
-    <h1 class="title">Handwriting Recognition </h1>
-    <div>
-      <div class="box">
-        <a class="button is-info" href="/Get Started">Get Started</a>
+<div class="main-container">
+  <h1 class="title">Math Handwriting Recognition</h1>
+  <div class="sections-container">
+
+    <!-- Math Section -->
+    <div class="section-box">
+      <div class="icon-container">
+        <img src="/static/img/WebDemoIcon-Math.svg" alt="Math Icon">
+      </div>
+      <div class="text-container">
+        <h2 class="section-title">Math</h2>
+        <p class="section-description">Write your calculations, equations, chemical formulas and get instant results.</p>
+      </div>
     </div>
+
   </div>
+
+  <div class="button-container">
+    <a class="button is-info" href="/Get Started">Get Started</a>
+  </div>
+</div>
+
+<style>
+  .main-container {
+    text-align: center;
+    padding: 20px;
+  }
+  .sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+  .section-box {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    width: 80%;
+    max-width: 600px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .icon-container {
+    width: 50px;
+    margin-right: 20px;
+  }
+  .icon-container img {
+    width: 100%;
+  }
+  .text-container {
+    text-align: left;
+  }
+  .section-title {
+    font-size: 1.5em;
+    color: #007bff;
+    margin: 0;
+  }
+  .section-description {
+    font-size: 1em;
+    color: #555;
+  }
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+</style>
 
 {% endblock %}

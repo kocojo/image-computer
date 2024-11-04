@@ -60,7 +60,8 @@ def div(formula: dict,pos:list)->list:
     return result
 def img_to_latex( img : np.ndarray)->str:
     cnn = tf.keras.models.load_model('mnist_cnn_model.keras')
-    cla = np.sort(os.listdir('data/extracted_images'))
+    cla = ['!', '(', ')', '+', ',', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '=', '[', ']', 'geq', 'gt',
+           'leq', 'neq', 'pi', 'sqrt', 'sum', 'times', '{', '}']
     # print(cla)
     formula = {}
     # Applying 7x7 Gaussian Blur
@@ -126,6 +127,5 @@ def img_to_latex( img : np.ndarray)->str:
     pos = list(formula.keys())
     result = div(formula,pos)
     return ''.join(result)
-img = cv2.imread('data/Untitled.jpg',flags=0)
-print(img_to_latex(img))
+
 
