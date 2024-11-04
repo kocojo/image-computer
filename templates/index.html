@@ -1,22 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawing App</title>
-    <style>
-        #canvas {
-            border: 1px solid black;
-            cursor: crosshair;
-        }
-    </style>
-</head>
-<body>
-    <h1>Drawing App</h1>
-    <canvas id="canvas" width="500" height="500"></canvas>
-    <br>
-    <button onclick="saveDrawing()">Save Drawing</button>
+{% extends "base.html" %}
+{% block content %}
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
-</body>
-</html>
+  <div class="main-container">
+    <h1 class="title">Handwriting Recognition </h1>
+    <div>
+      <div class="box">
+        <a class="button is-info" href="/Get Started">Get Started</a>
+    </div>
+  </div>
+
+{% endblock %}
