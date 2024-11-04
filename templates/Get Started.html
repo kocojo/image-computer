@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas App with Math Formula</title>
+    <style>
+        #canvas {
+            border: 1px solid black;
+        }
+    </style>
+    <!-- Thêm MathJax để hỗ trợ render LaTeX -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<div class="main-container">
+  <div>
+    <a href="/" class="button is-text">&lt; return to main menu</a>
+  </div>
+  <h1 class="title">Math Practice</h1>
+
+  <div style="display: flex; gap: 1rem;">
+    <div style="flex: 1;">
+      <div>
+        <canvas id="canvas" width="500" height="200" style="border: 1px solid #ccc;"></canvas>
+      </div>
+      <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+        <button type="button" class="button is-danger" onclick="resetCanvas()">
+          <i class="fas fa-trash"></i> Clear
+        </button>
+        <button type="button" class="button is-primary" onclick="sendImage()">
+          <i class="fas fa-arrow-right"></i> Convert
+        </button>
+      </div>
+    </div>
+
+    <div style="flex: 1;">
+      <div style="display: flex; border-bottom: 1px solid #ccc;">
+        <button class="tab-button active" onclick="showTab('math')">Math</button>
+        <button class="tab-button" onclick="showTab('latex')">LaTeX</button>
+        <button class="tab-button" onclick="showTab('result')">Result</button>
+      </div>
+
+      <div id="math" class="tab-content" style="display: block;">
+        <p style="color: #888;">Math output will appear here...</p>
+      </div>
+      <div id="latex" class="tab-content" style="display: none;">
+        <p style="color: #888;">\( E = mc^2 \)</p>
+      </div>
+      <div id="result" class="tab-content" style="display: none;">
+        <p style="color: #888;">MathML output will appear here...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form id="practice-form" action="practice" method="POST" style="display: none;">
+  <input id="pixels" name="pixels" type="hidden" />
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script>
+  $(document).ready(function() {
+    startCanvas();
+  });
+
+  function startCanvas() {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', (e) => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      drawing = false;
+      ctx.closePath();
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      drawing = false;
+    });
+  }
+
+  function practiceAction() {
+    document.getElementById('latex').innerHTML = "<p>Converted LaTeX output will appear here...</p>";
+  }
+
+  function resetCanvas() {
+    let canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('latex').innerHTML = "<p style='color: #888;'>LaTeX output will appear here...</p>";
+    document.getElementById('math').innerHTML = "<p style='color: #888;'>Math output will appear here...</p>";
+    document.getElementById('result').innerHTML = "<p style='color: #888;'>MathML output will appear here...</p>";
+  }
+
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.style.display = 'none';
+    });
+    document.getElementById(tabId).style.display = 'block';
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.classList.remove('active');
+    });
+    document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+  }
+  function sendImage() {
+    let canvas = document.getElementById('canvas');
+    const imageData = canvas.toDataURL('image/png');
+    fetch('/save_canvas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ image: imageData })
+            })
+    .then(data => {
+        console.log('Image data as np.array:', data);
+        return fetch('/get_text');
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    })
+    .then(data => {
+                const formulaElement = document.getElementById('math');
+                const r = data.formula
+                formulaElement.innerText = `$$${data.formula}$$`;  // Đặt công thức vào thẻ <p>
+                MathJax.typesetPromise([formulaElement]);  // MathJax render LaTeX
+                const latex = document.getElementById('latex');
+                latex.innerText = data.formula;
+            })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('latex').innerText = "An error occurred.";
+    })
+    .then(data => {
+        return fetch('/get_result');
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+        return response.json();
+    })
+    .then(data => {
+                const result = document.getElementById('result');
+                const r = data.result
+                result.innerText = r;  // Đặt công thức vào thẻ <p>
+            });
+}
+</script>
+
+<style>
+  .tab-button {
+    flex: 1;
+    padding: 0.5rem;
+    background: #f8f8f8;
+    border: none;
+    border-right: 1px solid #ccc;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .tab-button.active {
+    background: #e8e8e8;
+  }
+  .tab-content {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+</style>
+
+{% endblock %}
